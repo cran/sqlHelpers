@@ -1,6 +1,6 @@
-e60b31a6e207df9ee93fc4ff55c52863 *DESCRIPTION
+020cdabed028615b87e383fb288e2c45 *DESCRIPTION
 fd30cbe49cdfecd844defa951e594e45 *NAMESPACE
-c74ac5cdde3396653524ee4d9676d893 *R/sql_helpers.R
+c3d77e73cb127519183a089195011498 *R/sql_helpers.R
 b0524b13908c4d0be4c6116f8a34d94c *man/call_function.Rd
 3f42633858ba3ec9c0624bd659543958 *man/connect.Rd
 36fd61bb1e9496ed97d50afd9f083375 *man/create_table_from_data_frame.Rd

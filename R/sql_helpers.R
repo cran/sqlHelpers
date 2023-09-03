@@ -398,9 +398,9 @@ call_function <- function(
       }
       args <- c(args, nulls)
       arg_names <- c(arg_names, null_args)
-      args <- paste0(arg_names, " = ", args, collapse = ", ")
+      args <- paste0(arg_names, if(dialect == "Postgresql"){" => "}else{" = "}, args, collapse = ", ")
     }else if(length(nulls) > 0){
-      args <- paste0(null_args, " = ", nulls, collapse = ", ")
+      args <- paste0(null_args, if(dialect == "Postgresql"){" => "}else{" = "}, nulls, collapse = ", ")
     }else{
       args <- ""
     }
@@ -793,7 +793,7 @@ SELECT
                        THEN '(' + CASE WHEN c.max_length = -1 THEN 'MAX' ELSE CAST(c.max_length / 2 AS VARCHAR(5)) END + ')'
                      WHEN tp.name IN ('datetime2', 'time2', 'datetimeoffset')
                        THEN '(' + CAST(c.scale AS VARCHAR(5)) + ')'
-                     WHEN tp.name = 'decimal'
+                     WHEN tp.name IN ('decimal', 'numeric')
                        THEN '(' + CAST(c.[precision] AS VARCHAR(5)) + ',' + CAST(c.scale AS VARCHAR(5)) + ')'
                     ELSE ''
                 END +
@@ -894,7 +894,7 @@ SELECT
                        THEN '(' + CASE WHEN c.max_length = -1 THEN 'MAX' ELSE CAST(c.max_length / 2 AS VARCHAR(5)) END + ')'
                      WHEN tp.name IN ('datetime2', 'time2', 'datetimeoffset')
                        THEN '(' + CAST(c.scale AS VARCHAR(5)) + ')'
-                     WHEN tp.name = 'decimal'
+                     WHEN tp.name IN ('decimal', 'numeric')
                        THEN '(' + CAST(c.[precision] AS VARCHAR(5)) + ',' + CAST(c.scale AS VARCHAR(5)) + ')'
                     ELSE ''
                 END +
