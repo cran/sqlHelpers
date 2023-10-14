@@ -688,6 +688,88 @@ insert_values <- function(
   }
 }
 
+#' Generate a UPDATE statement, optionally execute the statement if con is not NULL.
+#'
+#' @param x A list, data.frame or data.table, names must match the column names of the destination SQL table.
+#' @param schema A string, the schema name of the destination SQL table.
+#' @param table A string, the table name of the destination SQL table.
+#' @param where A string, conditions to add to a WHERE statement.
+#' @param returning A vector of character strings specifying the SQL column names to be returned by the UPDATE statement.
+#' @param quote_text TRUE/FALSE, if TRUE, calls quoteText() to add single quotes around character strings.
+#' @param cast TRUE/FALSE, if TRUE, will add SQL to cast the data to be inserted to the specified type.
+#' @param types A vector of types to use for casting columns. If blank, will look at meta data about table to decide types.
+#' @param con A database connection that can be passed to DBI::dbSendQuery/DBI::dbGetQuery.
+#' @param dialect A string, "T-SQL" or "Postgresql".
+#' @return A string, the UPDATE statement; or the results retrieved by DBI::dbGetQuery after executing the statement.
+#' @examples
+#' update_values(
+#' x = list(col1 = c("a"), col2 = c(1)),
+#' schema = "test",
+#' table = "table1",
+#' where = "1=1",
+#' types = c("VARCHAR(12)", "INT")
+#' )
+update_values <- function(
+    x,
+    schema = NULL,
+    table,
+    where = NULL,
+    returning = NULL,
+    quote_text = TRUE,
+    cast = TRUE,
+    types = NULL,
+    con = NULL,
+    dialect = "T-SQL"
+){
+  x <- as.list(x)
+  if(length(x[[1]]) > 1){
+    stop("Cannot update records to more than 1 target value at a time (x can't have more than 1 row).")
+  }
+  x_names <- names(x)
+  if(!is.null(con) & is.null(types) & cast){
+    cols <- fetch_columns(con, schema, table)
+    types <- unlist(lapply(x_names, function(y){
+      cols[["data_type"]][cols[["column_name"]] == y]
+    }), use.names = FALSE)
+  }
+  if(quote_text == TRUE){
+    x <- lapply(x, quoteText)
+  }
+  if(cast == TRUE){
+    x <- paste0("CAST(", unlist(x), " AS ", types, ")")
+  }
+  sql <- paste0(
+    "UPDATE ", if(is.null(schema) == FALSE){paste(schema, table, sep = ".")}else{table},
+    "\nSET\n", paste0(paste(x_names, x, sep = " = "), collapse = ",\n"),
+    if(dialect == "T-SQL" & !is.null(returning)){
+      stringi::stri_join(" \nOUTPUT ", stringi::stri_join("INSERTED.", returning, collapse = ", "))
+    }else{
+      ""
+    },
+    if(length(where) == 0){
+      ""
+    }else{
+      paste0("\nWHERE\n", where)
+    },
+    if(dialect == "Postgresql" & !is.null(returning)){
+      stringi::stri_join(" \nRETURNING ", stringi::stri_join(returning, collapse = ", "))
+    }else{
+      ""
+    },
+    ";"
+  )
+  if(is.null(con)){
+    return(sql)
+  }else{
+    return(
+      DBI::dbGetQuery(
+        conn = con,
+        statement = sql
+      )
+    )
+  }
+}
+
 #' Generate a BULK INSERT statement, optionally execute the statement if con is not NULL.
 #'
 #' @param file A string, the file path to the file with data to insert.

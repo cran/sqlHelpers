@@ -1,6 +1,6 @@
-020cdabed028615b87e383fb288e2c45 *DESCRIPTION
+1c9513fd751868a60350caf06073db9c *DESCRIPTION
 fd30cbe49cdfecd844defa951e594e45 *NAMESPACE
-c3d77e73cb127519183a089195011498 *R/sql_helpers.R
+033a2649e9b0a9dcd3413160950c4a60 *R/sql_helpers.R
 b0524b13908c4d0be4c6116f8a34d94c *man/call_function.Rd
 3f42633858ba3ec9c0624bd659543958 *man/connect.Rd
 36fd61bb1e9496ed97d50afd9f083375 *man/create_table_from_data_frame.Rd
@@ -19,3 +19,4 @@ db87cd6bbf4af05e7a3c67c75df5c883 *man/t_sql_bulk_insert.Rd
 b86e907ee3925557f57e2a7b38f7eb4f *man/t_sql_script_create_table.Rd
 f27d0cce5e91b05d2d2657eb30292678 *man/t_sql_script_proc_definition.Rd
 207c35d422a4533e68cc30e926540f07 *man/truncate_table.Rd
+9df2fdae767259babc265cbf0a827cdf *man/update_values.Rd
